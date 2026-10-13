@@ -4,6 +4,9 @@
 Drexel's Term Master Schedule and Banner registration pages, backed by a Cloudflare
 Worker KV cache with direct-to-RMP fallback.
 
+Install from the Chrome Web Store:
+https://chromewebstore.google.com/detail/du-professorview/hglcajcloiiocoonpbfcdmgljofenlcp
+
 Not affiliated with or endorsed by Drexel University or Rate My Professors.
 
 ## Layout
