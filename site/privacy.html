@@ -11,7 +11,7 @@
 <main>
   <p><a href="./">← DU ProfessorView</a></p>
   <h1>Privacy Policy</h1>
-  <p class="tagline">Effective September 26, 2026</p>
+  <p class="tagline">Effective October 22, 2026</p>
 
   <p>DU ProfessorView is a Chrome extension that shows Rate My Professors ratings
   next to instructor names on Drexel University course pages. This policy describes
@@ -22,7 +22,7 @@
   and Banner registration pages you visit. To look up ratings, those names are sent to:</p>
   <ul>
     <li>the extension's own rating cache service, hosted on Cloudflare Workers
-      (<code>drexel-rmp-worker.mlhv.workers.dev</code>), which looks up names it
+      (<code>daniel-drexel-rmp-worker.danielamayaenvbo.workers.dev</code>), which looks up names it
       hasn't cached yet on ratemyprofessors.com, and</li>
     <li>ratemyprofessors.com directly, only when the cache service can't be reached.</li>
   </ul>
@@ -42,7 +42,8 @@
     <li><strong>On your device:</strong> rating results are saved in your browser's
       extension storage so repeat lookups are fast. They are refreshed after about
       24 hours; older copies are kept only as a fallback for when a lookup fails.
-      Removing the extension deletes all of them.</li>
+      Your saved professor shortlist and rating/difficulty filter preferences are
+      also stored only in extension storage. Removing the extension deletes all of them.</li>
     <li><strong>In the cache service:</strong> instructor name → rating results are
       stored for 1–7 days. These records contain no information about you.
       Cloudflare's standard infrastructure request logging applies to the service
@@ -54,7 +55,7 @@
   version is released, and the effective date above will change.</p>
 
   <h2>Contact</h2>
-  <p>Questions: <a href="https://github.com/mlhv/drexel-rmp/issues">GitHub Issues</a>.</p>
+  <p>Questions: <a href="https://github.com/danielamayaenvbo/drexel-rmp/issues">GitHub Issues</a>.</p>
 
   <footer>Not affiliated with or endorsed by Drexel University or Rate My Professors.</footer>
 </main>
