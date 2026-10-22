@@ -29,6 +29,7 @@
 - One click to the professor's full Rate My Professors page
 - Multi-instructor sections get one badge per instructor
 - If no confident match exists, you see "n/a", never the wrong professor's rating
+- An on-demand AI Insights panel (when an authorized review provider is configured)
 
 <p align="center">
   <img src="docs/images/rating-tooltip.png" width="600" alt="Hovering a badge shows quality, difficulty, would-take-again percentage, and rating count">
@@ -76,6 +77,55 @@ containing `WXT_WORKER_URL=http://localhost:8787`.
 To load a local build instead of the store version: `pnpm -F @drexel-rmp/extension build`,
 then chrome://extensions → Developer mode → Load unpacked →
 `packages/extension/.output/chrome-mv3`.
+
+### AI Review Insights
+
+The extension includes an `AI Insights` button beside a matched rating. It only
+requests the Worker after the button is activated; it never runs while Banner
+or the Term Master Schedule is loading. The panel is designed to summarize
+recurring teaching, workload, exams, grading, and accessibility patterns, and
+does not display percentages or confidence scores.
+
+The current RMP teacher-search GraphQL response used by this project exposes
+aggregate ratings, not review text. No authorized review-text provider is
+configured, so the deployed feature remains unavailable rather than scraping
+RMP or presenting fabricated insights. `packages/worker/src/reviewProvider.ts`
+is the integration boundary for a provider that has permission to supply review
+text.
+
+When an authorized provider is available, the Worker can be explicitly
+enabled with:
+
+```toml
+[vars]
+AI_INSIGHTS_ENABLED = "true"
+REVIEW_DATA_SOURCE = "authorized"
+AI_MODEL = "@cf/meta/llama-3.1-8b-instruct"
+AI_DAILY_LIMIT = "25"
+```
+
+Inference is server-side through the Cloudflare Workers AI binding (`AI`).
+There is no paid fallback and no credential in the extension. Insights are
+cached in KV for seven days, inputs are bounded and treated as untrusted, and
+responses are validated before caching. The daily counter is a best-effort
+per-client KV counter, not a globally atomic quota. Requests also have a
+short timeout and return a friendly unavailable response when the binding or
+quota cannot be used.
+
+Cloudflare documents Workers AI pricing as neuron-based with a free daily
+allocation (currently documented as 10,000 neurons/day); availability and
+billing depend on the Cloudflare account and plan. A free allocation is not a
+guarantee of zero cost. Keep `AI_INSIGHTS_ENABLED` unset/false unless the
+account has been reviewed, set a conservative daily limit, and monitor the
+Cloudflare dashboard. The model name is configurable and must be checked
+against Cloudflare's current model catalog before deployment.
+
+The analysis and schema tests use mocked AI responses and require no API key:
+
+```sh
+pnpm -F @drexel-rmp/shared test
+pnpm -F @drexel-rmp/worker test
+```
 
 ### Release checks
 
