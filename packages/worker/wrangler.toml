@@ -1,4 +1,4 @@
-name = "drexel-rmp-worker"
+name = "daniel-drexel-rmp-worker"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"
 
@@ -7,7 +7,7 @@ binding = "AI"
 
 [[kv_namespaces]]
 binding = "RMP_CACHE"
-id = "2e1d7c3f7219480fadaa9a4d2cb31e92"
+id = "f2033cfb51234e5698e7a21f80d9c818"
 
 [vars]
 # chrome-extension://<store item id>, set during docs/store/runbook.md bootstrap.

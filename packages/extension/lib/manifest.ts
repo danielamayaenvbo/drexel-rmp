@@ -1,7 +1,7 @@
 import type { UserManifest } from "wxt";
 
 /** Deployed Cloudflare Worker base URL (see packages/worker/README.md). */
-export const PROD_WORKER_URL = "https://drexel-rmp-worker.mlhv.workers.dev";
+export const PROD_WORKER_URL = "https://daniel-drexel-rmp-worker.danielamayaenvbo.workers.dev";
 
 /**
  * The Chrome Web Store item's public key (Dashboard → Package → "View public key",
