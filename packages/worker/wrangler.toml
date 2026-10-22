@@ -2,6 +2,9 @@ name = "drexel-rmp-worker"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"
 
+[ai]
+binding = "AI"
+
 [[kv_namespaces]]
 binding = "RMP_CACHE"
 id = "2e1d7c3f7219480fadaa9a4d2cb31e92"
