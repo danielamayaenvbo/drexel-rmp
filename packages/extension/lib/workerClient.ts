@@ -1,4 +1,4 @@
-import type { LookupResult } from "@drexel-rmp/shared";
+import { isInsightsResponse, type InsightsResponse, type LookupResult } from "@drexel-rmp/shared";
 
 type FetchFn = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 
@@ -34,5 +34,20 @@ export function createWorkerFetcher(baseUrl: string, timeoutMs: number, fetchFn:
     const json: unknown = await res.json();
     if (!isLookupResult(json)) throw new Error("unexpected worker response");
     return json;
+  };
+}
+
+export function createInsightsFetcher(baseUrl: string, timeoutMs: number, fetchFn: FetchFn = fetch) {
+  const timedFetch = withTimeout(fetchFn, timeoutMs);
+  return async (professorId: number): Promise<InsightsResponse> => {
+    const res = await timedFetch(`${baseUrl}/api/professors/${professorId}/insights`);
+    const json: unknown = await res.json();
+    if (!isInsightsResponse(json)) {
+      throw new Error("unexpected insights response");
+    }
+    if (!res.ok && res.status !== 422 && res.status !== 503 && res.status !== 429) {
+      throw new Error(`worker HTTP ${res.status}`);
+    }
+    return json as InsightsResponse;
   };
 }

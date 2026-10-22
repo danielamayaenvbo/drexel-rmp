@@ -4,12 +4,15 @@ import { createBadge } from "@/components/badge";
 import { parseInstructorCell } from "@/lib/names";
 import { startScanner } from "@/lib/scanner";
 import type { SiteConfig } from "@/lib/sites";
+import type { InsightsResponse } from "@drexel-rmp/shared";
 
 export type LookupFn = (name: string) => Promise<LookupResult | null>;
 
 /** Ask the background service worker (Task 10's message protocol). */
 const lookupViaBackground: LookupFn = async (name) =>
   (await browser.runtime.sendMessage({ type: "LOOKUP_PROFESSOR", name })) as LookupResult | null;
+const insightsViaBackground = async (professorId: number): Promise<InsightsResponse> =>
+  (await browser.runtime.sendMessage({ type: "GET_PROFESSOR_INSIGHTS", professorId })) as InsightsResponse;
 
 /**
  * Wire scanner -> name parsing -> lookup -> badge injection for one site. Returns a stop function.
@@ -34,7 +37,7 @@ async function fillSlot(slot: HTMLElement, name: string, lookup: LookupFn, befor
   try {
     const result = await lookup(name);
     if (result && slot.isConnected) {
-      const badge = createBadge(result, name);
+      const badge = createBadge(result, name, insightsViaBackground);
       // The space separates badge from name; when appended it is also a line-break
       // opportunity, so the badge wraps in narrow cells instead of being clipped.
       if (before) slot.append(badge, " ");

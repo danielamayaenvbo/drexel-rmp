@@ -3,7 +3,7 @@ import { browser } from "wxt/browser";
 import { getCached, setCached } from "@/lib/cache";
 import { DIRECT_TIMEOUT_MS, WORKER_TIMEOUT_MS, WORKER_URL } from "@/lib/config";
 import { createLookupService } from "@/lib/lookup";
-import { createWorkerFetcher, withTimeout } from "@/lib/workerClient";
+import { createInsightsFetcher, createWorkerFetcher, withTimeout } from "@/lib/workerClient";
 
 export default defineBackground(() => {
   const service = createLookupService({
@@ -12,15 +12,20 @@ export default defineBackground(() => {
     fetchFromWorker: createWorkerFetcher(WORKER_URL, WORKER_TIMEOUT_MS),
     fetchDirect: (name) => lookupProfessorViaRmp(name, withTimeout(fetch, DIRECT_TIMEOUT_MS)),
   });
+  const fetchInsights = createInsightsFetcher(WORKER_URL, WORKER_TIMEOUT_MS);
 
   browser.runtime.onMessage.addListener((message: unknown, _sender, sendResponse) => {
-    const msg = message as { type?: string; name?: string };
+    const msg = message as { type?: string; name?: string; professorId?: number };
     if (msg?.type === "LOOKUP_PROFESSOR" && typeof msg.name === "string") {
       service
         .lookup(msg.name)
         .then(sendResponse)
         .catch(() => sendResponse(null));
       return true; // keep the message channel open for the async response
+    }
+    if (msg?.type === "GET_PROFESSOR_INSIGHTS" && typeof msg.professorId === "number") {
+      fetchInsights(msg.professorId).then(sendResponse).catch(() => sendResponse({ status: "unavailable", reason: "ai_disabled" }));
+      return true;
     }
   });
 });
