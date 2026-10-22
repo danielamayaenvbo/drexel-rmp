@@ -1,6 +1,7 @@
 import type { LookupResult } from "@drexel-rmp/shared";
 import { browser } from "wxt/browser";
 import { createBadge } from "@/components/badge";
+import { applyFilters, registerVisibleProfessor, saveProfessor } from "@/lib/planner";
 import { parseInstructorCell } from "@/lib/names";
 import { startScanner } from "@/lib/scanner";
 import type { SiteConfig } from "@/lib/sites";
@@ -37,7 +38,11 @@ async function fillSlot(slot: HTMLElement, name: string, lookup: LookupFn, befor
   try {
     const result = await lookup(name);
     if (result && slot.isConnected) {
-      const badge = createBadge(result, name, insightsViaBackground);
+      const badge = createBadge(result, name, insightsViaBackground, saveProfessor);
+      if (result.status === "found") {
+        registerVisibleProfessor(result.rating);
+        void applyFilters(badge, result.rating);
+      }
       // The space separates badge from name; when appended it is also a line-break
       // opportunity, so the badge wraps in narrow cells instead of being clipped.
       if (before) slot.append(badge, " ");

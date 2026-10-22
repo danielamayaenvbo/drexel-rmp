@@ -1,6 +1,7 @@
 import { DREXEL_LEGACY_SCHOOL_ID, type InsightsResponse, type LookupResult } from "@drexel-rmp/shared";
 import { attachTooltip } from "./tooltip";
 import { renderInsightsPanel } from "./insights";
+import type { ProfessorRating } from "@drexel-rmp/shared";
 
 const STYLES = `
   :host { all: initial; }
@@ -48,6 +49,7 @@ export function createBadge(
   result: LookupResult,
   queriedName: string,
   fetchInsights?: (professorId: number) => Promise<InsightsResponse>,
+  save?: (rating: ProfessorRating) => Promise<void>,
 ): HTMLElement {
   const host = document.createElement("span");
   host.className = "rmp-badge-host";
@@ -95,6 +97,24 @@ export function createBadge(
         }
       });
       shadow.append(insightsButton);
+    }
+    if (save) {
+      const saveButton = document.createElement("button");
+      saveButton.type = "button";
+      saveButton.className = "insights-button";
+      saveButton.textContent = "Save";
+      saveButton.addEventListener("click", async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        saveButton.disabled = true;
+        try {
+          await save(rating);
+          saveButton.textContent = "Saved";
+        } catch {
+          saveButton.textContent = "Save failed";
+        }
+      });
+      shadow.append(saveButton);
     }
   } else {
     badge.className = "badge none";
